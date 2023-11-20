@@ -17,7 +17,7 @@ const MovieItem = ({
   const [putImage, setPutImage] = useState("");
   const [putRaiting, setPutRaiting] = useState("");
   const [putDescription, setPutDescription] = useState("");
-
+  const [error, setError] = useState();
 
   const deleteFunc = () => {
     deleteMovie(id);
@@ -28,41 +28,79 @@ const MovieItem = ({
   const updateRaiting = (e) => setPutRaiting(e.target.value);
   const updateDescription = (e) => setPutDescription(e.target.value);
 
-
   const updateMovieFunc = () => {
-    updateMovie(id, putName, putImage, putRaiting,putDescription);
+    if (
+      putName.trim() !== "" &&
+      putImage.trim().startsWith("data") &&
+      putDescription.trim().length > 10 &&
+      !isNaN(putRaiting) &&
+      putRaiting > 0 &&
+      putRaiting <= 5
+    ) {
+      updateMovie(id, putName, putImage, putRaiting, putDescription);
+      setError("");
+      setPutName("");
+      setPutImage("");
+      setPutDescription("");
+      setPutRaiting("");
+    } else {
+      setError("Сураныч формалардын устундогу условияларды аткарыныз!");
+    }
+  };
+
+    const close = () => {
+    toggleModalPut();
+    setError("");
+    setPutName("");
+    setPutImage("");
+    setPutDescription("");
+    setPutRaiting("");
   };
 
   return (
-    <StyledConteiner key={id}>
-      <StyledImage src={image} alt="movie-img" />
-      <StyledHeading>{name}</StyledHeading>
-      <StyledStar> star {raiting}/5</StyledStar>
-      <StyledButtonContainer>
-        <StyledDeleteButton onClick={deleteFunc}>DELETE</StyledDeleteButton>
-        <StyledUpdateButton onClick={toggleModalPut}>UPDATE</StyledUpdateButton>
-      </StyledButtonContainer>
+    <>
+      <StyledConteiner key={id}>
+        <StyledImage src={image} alt="movie-img" />
+        <StyledHeading>{name}</StyledHeading>
+        <StyledStar> star {raiting}/5</StyledStar>
+        <StyledButtonContainer>
+          <StyledDeleteButton onClick={deleteFunc}>DELETE</StyledDeleteButton>
+          <StyledUpdateButton onClick={toggleModalPut}>
+            UPDATE
+          </StyledUpdateButton>
+        </StyledButtonContainer>
+      </StyledConteiner>
+
       {openPutModal && (
-        <Modal onClose={toggleModalPut}>
+        <Modal onClose={close}>
           <StyledModalConteiner>
+            <StyledLabel>Форма пустой болбош керек! </StyledLabel>
+
             <StyledModalInput
               type="text"
               value={putName}
               onChange={updateName}
               placeholder="Enter new movie name..."
             />
+            <StyledLabel>
+              Форма data деген соз менен башталуу керек!
+            </StyledLabel>
             <StyledModalInput
               type="text"
               value={putImage}
               onChange={updateImage}
               placeholder="Enter new URL image..."
             />
+            <StyledLabel>Форма 10 создон аз болбош керек!</StyledLabel>
+
             <StyledModalInput
               type="text"
               value={putDescription}
               onChange={updateDescription}
               placeholder="Enter new description..."
             />
+            <StyledLabel>Формага 0 дон 5 ке чейин эле жаза аласыз!</StyledLabel>
+
             <StyledModalInput
               type="number"
               value={putRaiting}
@@ -70,12 +108,13 @@ const MovieItem = ({
               placeholder="Enter new movie raiting..."
             />
           </StyledModalConteiner>
+          <StyledError>{error}</StyledError>
           <StyledModalAddButton onClick={updateMovieFunc}>
             UPDATE
           </StyledModalAddButton>
         </Modal>
       )}
-    </StyledConteiner>
+    </>
   );
 };
 
@@ -116,8 +155,8 @@ const StyledDeleteButton = styled.button`
   color: white;
   font-weight: bold;
   cursor: pointer;
-  &:active{
-    background-color:orange;
+  &:active {
+    background-color: orange;
   }
 `;
 
@@ -127,7 +166,7 @@ const StyledUpdateButton = styled.button`
   border: none;
   background-color: green;
   color: white;
-  cursor:pointer;
+  cursor: pointer;
   font-weight: bold;
 `;
 
@@ -152,4 +191,13 @@ const StyledModalAddButton = styled.button`
   background: green;
   margin-top: 1rem;
   margin-right: 1rem;
+  cursor: pointer;
+  color: white;
+`;
+const StyledError = styled.p`
+  color: red;
+`;
+
+const StyledLabel = styled.label`
+  color: blue;
 `;

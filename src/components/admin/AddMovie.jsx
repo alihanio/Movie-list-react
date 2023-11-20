@@ -124,6 +124,7 @@ const AddMovie = () => {
         {movie.map((item) => (
           <MovieItem
             {...item}
+            key={item.id}
             deleteMovie={deleteMovie}
             toggleModalPut={toggleModalPut}
             openPutModal={openPutModal}
